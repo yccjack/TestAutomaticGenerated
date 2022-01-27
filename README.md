@@ -1,0 +1,2 @@
+# TestAutomaticGenerated
+自动生成基础逻辑的测试类，免除手动创建数据的问题
