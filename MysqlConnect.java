@@ -1,10 +1,10 @@
-package com.huawei.it.cspm.auto;
+package ;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 /**
- * @author yWX1117504
+ * @author yccjack
  * @since 2022/1/26
  */
 public class MysqlConnect {
