@@ -1,8 +1,7 @@
-package com.huawei.it.cspm.auto;
+package ;
 
 import com.alibaba.fastjson.JSON;
-import com.huawei.it.cspm.auto.model.MapperModel;
-import com.huawei.it.cspm.hlrcworkorder.requireorder.api.dto.RequireOrderDto;
+import auto.model.MapperModel;
 
 /**
  * @author yccjack
