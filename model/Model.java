@@ -1,4 +1,4 @@
-package com.huawei.it.cspm.auto.model;
+package ;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.huawei.it.cspm.auto.Predict;
-import com.huawei.it.cspm.auto.TestClassMockAuto;
+import Predict;
+import TestClassMockAuto;
 
 import lombok.Data;
 
 /**
  * 模型类
  *
- * @author yWX1117504
+ * @author yccjack
  * @since 2022/1/25
  */
 @Data
@@ -35,12 +35,10 @@ public class Model {
 
     public static Map<String, List<String>> usedParamMapForParamName = new HashMap<>(8 * 1024);
 
-    public static String rootPath = userPath
-        + "\\ccp.cspm.hlrcworkorder.parent\\ccp.cspm.hlrcworkorder.test\\src\\test\\java\\com\\huawei\\it\\cspm\\";
+    public static String rootPath = userPath;
 
 
-    public static String mapperRootPath = userPath
-        + "\\ccp.cspm.hlrcworkorder.parent\\ccp.cspm.hlrcworkorder\\src\\main\\java\\com\\huawei\\it\\cspm\\hlrcworkorder\\";
+    public static String mapperRootPath = userPath;
 
 
     public static Predict predict = Predict.getPredict();
