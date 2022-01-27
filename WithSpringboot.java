@@ -1,11 +1,11 @@
-package com.huawei.it.cspm.auto;
+package ;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Locale;
 
 /**
- * @author yWX1117504
+ * @author yccjack
  * @since 2022/1/25
  */
 public class WithSpringboot extends TestClassMockAuto {
@@ -79,7 +79,7 @@ public class WithSpringboot extends TestClassMockAuto {
 
     protected void handlerTestUtilsImport(String fileName) {
         String getPackageStr = fileName.substring(0, fileName.lastIndexOf("."));
-        javaFile.append("package com.huawei.it.cspm.").append(getPackageStr).append(";").append(line).append(line);
+        javaFile.append("package ").append(getPackageStr).append(";").append(line).append(line);
         importSb.add("import org.junit.Assert;" + line);
         importSb.add("import org.junit.jupiter.api.Test;" + line);
         importSb.add("import org.springframework.beans.BeanUtils;" + line);
@@ -94,7 +94,6 @@ public class WithSpringboot extends TestClassMockAuto {
         importSb.add("import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;" + line);
         importSb.add("import com.alibaba.fastjson.JSON;" + line);
         importSb.add("import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;" + line);
-        importSb.add("import com.huawei.it.cspm.hlrc.provider.InitDataTest;" + line);
         importSb.add("import lombok.extern.log4j.Log4j;" + line);
     }
 }
