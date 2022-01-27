@@ -22,8 +22,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
  * @author yccjack
  * @since 2022/1/26
  */
-public class RequireOrderHandler extends MapperModel {
+public class OnerHandler extends MapperModel {
 
+    //实体路径[对应mybatis-plus的实体]
     protected final static String requireOrderPoPath = mapperRootPath + "..\\po";
 
     /**
