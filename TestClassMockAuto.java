@@ -135,13 +135,55 @@ public abstract class TestClassMockAuto {
     public static void main(String[] args) throws IOException {
 
         TestClassMockAuto testClassMockAuto = new WithSpringboot();
-        testClassMockAuto.generateHasNoSpringBoot(RepairRequireOrderService.class);
+        testClassMockAuto.generateHasNoSpringBoot(...class);
     }
 
+   
     public void generateHasNoSpringBoot(Class<?> clazz) throws IOException {
         String name = clazz.getName();
         simpleName = clazz.getSimpleName();
         String fileName = name.substring(19);
+        String packageStr = fileName.substring(0, fileName.lastIndexOf("."));
+        //获取需要创建的文件
+        File file = getFile(fileName);
+        if (file == null) {
+            return;
+        }
+        handlerTestUtilsImport(packageStr);
+
+        Field[] fields = clazz.getDeclaredFields();
+        handlerFieldImport(fields);
+        handlerClassAnnotation();
+        getClassName(simpleName);
+        firstClassLower();
+        classSb.append("private ").append(simpleName).append(" ").append(lowerFirstName).append(";").append(doubleLine);
+        handlerPrivateField(fields);
+        handlerTestMethodCreate(clazz, lowerFirstName);
+        handlerAround(simpleName, lowerFirstName);
+        System.out.println(javaFile);
+        createTestFile(file);
+    }
+
+    /**
+     * 将首字母变成小写
+     */
+    protected void firstClassLower() {
+        String firstChar = simpleName.substring(0, 1);
+        //首字母大写
+        boolean matches = firstChar.matches(regex);
+        lowerFirstName = simpleName;
+        if (matches) {
+            lowerFirstName = simpleName.replaceFirst(firstChar, firstChar.toLowerCase(Locale.ROOT));
+        }
+    }
+
+    /**
+     * 获取需要生成的java文件
+     *
+     * @param fileName 文件名
+     * @return 最终路径的文件
+     */
+    protected File getFile(String fileName) {
         String[] split = fileName.split("\\.");
         StringBuilder sb = new StringBuilder();
         for (String s : split) {
@@ -151,7 +193,7 @@ public abstract class TestClassMockAuto {
         String filePath = rootPath + sb;
         File file = new File(filePath);
         if (file.exists()) {
-            return;
+            return null;
         }
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
@@ -160,27 +202,16 @@ public abstract class TestClassMockAuto {
                 throw new RuntimeException("创建目录失败，请检查系统权限");
             }
         }
-        handlerTestUtilsImport(fileName);
-        Field[] fields = clazz.getDeclaredFields();
-        handlerFieldImport(fields);
-        handlerClassAnnotation();
-        getClassName(simpleName);
-        String firstChar = simpleName.substring(0, 1);
-        //首字母大写
-        boolean matches = firstChar.matches(regex);
-        lowerFirstName = simpleName;
-        if (matches) {
-            lowerFirstName = simpleName.replaceFirst(firstChar, firstChar.toLowerCase(Locale.ROOT));
-        }
-        classSb.append("private ").append(simpleName).append(" ").append(lowerFirstName).append(";").append(doubleLine);
-        handlerPrivateField(fields);
-        handlerTestMethodCreate(clazz, lowerFirstName);
-        handlerAround(simpleName, lowerFirstName);
-        System.out.println(javaFile);
-        createTestFile(file);
+        return file;
     }
 
-    private void createTestFile(File file) throws IOException {
+    /**
+     * 生成文件
+     *
+     * @param file 生成的文件
+     * @throws IOException 文件异常
+     */
+    protected void createTestFile(File file) throws IOException {
         boolean newFile = file.createNewFile();
         if (!newFile) {
             throw new RuntimeException("创建文件失败，请检查权限、文件深度、目录权限");
@@ -189,6 +220,12 @@ public abstract class TestClassMockAuto {
         fis.write(javaFile.toString().getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * 生成测试类对应目标类的public方法
+     *
+     * @param clazz 目标类
+     * @param lowerFirstName 目标类首字母小写名称
+     */
     protected void handlerTestMethodCreate(Class<?> clazz, String lowerFirstName) {
         LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         String simpleName = clazz.getSimpleName();
@@ -338,10 +375,21 @@ public abstract class TestClassMockAuto {
 
     }
 
+    /**
+     * 获取生成的测试类的类名。此处无继承实现，如需继承实现需要在子类中覆写
+     *
+     * @param simpleName 简单类名
+     */
     protected void getClassName(String simpleName) {
         classSb.append("public class ").append(simpleName).append("Test{").append(line);
     }
 
+    /**
+     * 拼接整体的文件得到最终文件集合
+     *
+     * @param simpleName 目标简单类名
+     * @param lowerFirstName 目标简单类名首字母小写
+     */
     protected void handlerAround(String simpleName, String lowerFirstName) {
         for (String s : importSb) {
             javaFile.append(s);
@@ -371,6 +419,11 @@ public abstract class TestClassMockAuto {
         javaFile.append(classSb);
     }
 
+    /**
+     * 生成测试类中拼接出目标类的非静态的注入属性
+     *
+     * @param fields 目标类属性集
+     */
     protected void handlerPrivateField(Field[] fields) {
         for (Field field : fields) {
             boolean matches;
@@ -414,6 +467,9 @@ public abstract class TestClassMockAuto {
             .append(line);
     }
 
+    /**
+     * 生成的测试类的类头注解。此处为默认实现，需要进行业务的覆写[子类覆写]
+     */
     protected void handlerClassAnnotation() {
         classSb.append(line).append(line);
         classSb.append("@RunWith(PowerMockRunner.class)")
@@ -422,6 +478,11 @@ public abstract class TestClassMockAuto {
             .append(line);
     }
 
+    /**
+     * 生成目标测试类中注入的其他类的导入信息
+     *
+     * @param fields 目标类的属性集
+     */
     protected void handlerFieldImport(Field[] fields) {
         for (Field field : fields) {
             field.setAccessible(true);
@@ -430,9 +491,13 @@ public abstract class TestClassMockAuto {
         }
     }
 
-    protected void handlerTestUtilsImport(String fileName) {
-        String getPackageStr = fileName.substring(0, fileName.lastIndexOf("."));
-        javaFile.append("package com.huawei.it.cspm.").append(getPackageStr).append(";").append(line).append(line);
+    /**
+     * 初始化package+测试类需要导入的包
+     *
+     * @param packageStr 截取的工程目录到生成测试类的包路径
+     */
+    protected void handlerTestUtilsImport(String packageStr) {
+        javaFile.append("package com.huawei.it.cspm.").append(packageStr).append(";").append(line).append(line);
         importSb.add("import org.powermock.modules.junit4.PowerMockRunner;" + line);
         importSb.add("import org.junit.runner.RunWith;" + line);
         importSb.add("import org.powermock.core.classloader.annotations.PrepareForTest;" + line);
