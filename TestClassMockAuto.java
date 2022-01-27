@@ -23,7 +23,7 @@ import org.junit.platform.commons.util.StringUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 
 import com.alibaba.fastjson.JSON;
-import auto.model.Model;
+import model.Model;
 
 /**
  * 自动生成对应的mock测试基础类
@@ -139,6 +139,21 @@ public abstract class TestClassMockAuto {
     }
 
    
+     /**
+     * [创建目标文件] --> [生成类的package+import] --> [生成类的注入属性] -->
+     * [生成public方法的测试类  --> {获取目标的参数
+     * if
+     * 1. 基本类型 从基本类型的基础数据中取【根据自己需求自定义】
+     * 2. 包装类型 从包装类型的数据集中取
+     * 3. 引用类型， 根据业务的不同自行实现  demo--> {@link OneHandler} {@link MapperModel}
+     * <p>
+     * } --> 生成目标方法的测试方法；
+     * <p>
+     * ]
+     *
+     * @param clazz
+     * @throws IOException
+     */
     public void generateHasNoSpringBoot(Class<?> clazz) throws IOException {
         String name = clazz.getName();
         simpleName = clazz.getSimpleName();
@@ -233,6 +248,7 @@ public abstract class TestClassMockAuto {
         for (Method method : methods) {
             List<Object> paramList = new ArrayList<>();
             Class<?> declaringClass = method.getDeclaringClass();
+            //剔除继承非覆写的方法
             if (!declaringClass.getSimpleName().equalsIgnoreCase(simpleName)) {
                 continue;
             }
@@ -240,14 +256,15 @@ public abstract class TestClassMockAuto {
             Parameter[] parameters = method.getParameters();
             String[] params = u.getParameterNames(method);
             String methodName = method.getName();
+            //剔除从Object继承的clone方法
             if (methodName.contains("Clone")) {
                 continue;
             }
             int length = parameterTypes.length;
             methodBuild.append("@Test").append(line);
             methodBuild.append("public void ").append(methodName).append("Test(){").append(line);
-
             for (int i = 0; i < length; i++) {
+                //未检测到方法有参数
                 if (params == null) {
                     continue;
                 }
@@ -319,11 +336,26 @@ public abstract class TestClassMockAuto {
         return primitiveMap.get(typeName);
     }
 
+    /**
+     * 训练的文件中未发现此类型此名称使用过的参数，重新生成新的参数
+     *
+     * @param paramName 参数名称
+     * @param paramTypeName 参数类型
+     * @param methodName 方法名称
+     * @return 根据需求实现获取的新参数
+     */
     protected String createParam(String paramName, String paramTypeName, String methodName) {
         return Model.createParam(paramName, paramTypeName, methodName);
 
     }
 
+    /**
+     * 从训练文件中获取已经使用过的参数
+     *
+     * @param simpleName 简单类型
+     * @param name 参数名称
+     * @return 已使用过的参数
+     */
     protected String getParamFromStr(String simpleName, String name) {
         Set<String> objects = usedParamMap.get(simpleName);
         if (objects == null) {
@@ -332,8 +364,11 @@ public abstract class TestClassMockAuto {
         return objects.parallelStream().filter(p -> p.contains(name)).findFirst().orElse("NA");
     }
 
+    /**
+     * 初始化训练文件
+     */
     protected static void exerciseStr() {
-        File file = new File(rootPath + "\\auto\\exercise\\autoTestModel.xl");
+        File file = new File(rootPath + "\\exercise\\autoTestModel.xl");
         StringBuilder modelSb = new StringBuilder(2048);
         try (BufferedReader fis = new BufferedReader(new FileReader(file))) {
             String s = fis.readLine();
@@ -348,6 +383,12 @@ public abstract class TestClassMockAuto {
         JSON.toJSONString(model);
     }
 
+    /**
+     * 解析xl文件
+     *
+     * @param modelSb xl文件读出来的集合
+     * @return 模型
+     */
     protected static Model parseExerciseFile(StringBuilder modelSb) {
         String s = modelSb.toString();
         if (StringUtils.isNotBlank(s)) {
@@ -501,7 +542,6 @@ public abstract class TestClassMockAuto {
         importSb.add("import org.powermock.modules.junit4.PowerMockRunner;" + line);
         importSb.add("import org.junit.runner.RunWith;" + line);
         importSb.add("import org.powermock.core.classloader.annotations.PrepareForTest;" + line);
-        importSb.add("import com.huawei.it.jalor5.core.util.RandomUtil;" + line);
         importSb.add("import org.junit.Before;" + line);
         importSb.add("import org.powermock.api.mockito.PowerMockito;" + line);
         importSb.add("import org.springframework.test.util.ReflectionTestUtils;" + line);
