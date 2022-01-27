@@ -53,12 +53,12 @@ public class MapperModel {
     }
 
     public MapperModel(String typeName) {
-        if (typeName.toLowerCase(Locale.ROOT).contains("workorder")) {
-            next.get().add(new WorkOrderHandler());
-        } else if (typeName.toLowerCase(Locale.ROOT).contains("requireorder")) {
-            next.get().add(new RequireOrderHandler());
-        } else if (typeName.toLowerCase(Locale.ROOT).contains("returnorder")) {
-            next.get().add(new ReturnOrderHandler());
+        if (typeName.toLowerCase(Locale.ROOT).contains("one")) {
+            next.get().add(new OneHandler());
+        } else if (typeName.toLowerCase(Locale.ROOT).contains("two")) {
+            next.get().add(new TwoHandler());
+        } else if (typeName.toLowerCase(Locale.ROOT).contains("three")) {
+            next.get().add(new ThreeHandler());
         } else {
             next.get().add(new OtherHandler());
         }
