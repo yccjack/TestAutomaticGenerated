@@ -1,4 +1,4 @@
-package com.huawei.it.cspm.auto;
+package ;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -90,11 +90,10 @@ public class WithoutSpringboot extends TestClassMockAuto {
 
     protected void handlerTestUtilsImport(String fileName, StringBuilder javaFile) {
         String getPackageStr = fileName.substring(0, fileName.lastIndexOf("."));
-        javaFile.append("package com.huawei.it.cspm.").append(getPackageStr).append(";").append(line).append(line);
+        javaFile.append("package ").append(getPackageStr).append(";").append(line).append(line);
         javaFile.append("import org.powermock.modules.junit4.PowerMockRunner;").append(line);
         javaFile.append("import org.junit.runner.RunWith;").append(line);
         javaFile.append("import org.powermock.core.classloader.annotations.PrepareForTest;").append(line);
-        javaFile.append("import com.huawei.it.jalor5.core.util.RandomUtil;").append(line);
         javaFile.append("import org.junit.Before;").append(line);
         javaFile.append("import org.powermock.api.mockito.PowerMockito;").append(line);
         javaFile.append("import org.springframework.test.util.ReflectionTestUtils;").append(line);
