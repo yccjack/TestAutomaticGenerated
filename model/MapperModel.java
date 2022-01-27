@@ -26,11 +26,11 @@ public class MapperModel {
 
     public static String mapperRootPath = Model.mapperRootPath;
 
-    protected final static String workOrderMapperPath = mapperRootPath + "workorder\\infrastructure\\dao";
+    protected final static String workOrderMapperPath = mapperRootPath + "..\\dao";
 
-    protected final static String requireOrderMapperPath = mapperRootPath + "requireorder\\infrastructure\\dao";
+    protected final static String requireOrderMapperPath = mapperRootPath + "..\\dao";
 
-    protected final static String returnOrderMapperPath = mapperRootPath + "returnorder\\infrastructure\\dao";
+    protected final static String returnOrderMapperPath = mapperRootPath + "..\\dao";
 
     protected static Connection connection = MysqlConnect.getMysqlConnect();
 
