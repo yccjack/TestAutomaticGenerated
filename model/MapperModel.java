@@ -1,4 +1,4 @@
-package com.huawei.it.cspm.auto.model;
+package ;
 
 import java.lang.annotation.Annotation;
 import java.sql.Connection;
@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.huawei.it.cspm.auto.MysqlConnect;
+import auto.MysqlConnect;
 
 /**
  * 从此处开始跟系统业务关联比较大，如果想迁移，改动这里的代码。以及策略类
  *
- * @author yWX1117504
+ * @author yccjack
  * @since 2022/1/26
  */
 public class MapperModel {
