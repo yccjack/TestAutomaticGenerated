@@ -1,4 +1,4 @@
-package com.huawei.it.cspm.auto.model;
+package ;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -17,21 +17,20 @@ import org.junit.platform.commons.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.huawei.it.jalor5.core.base.PageVO;
 
 /**
- * @author yWX1117504
+ * @author yccjack
  * @since 2022/1/26
  */
 public class RequireOrderHandler extends MapperModel {
 
-    protected final static String requireOrderPoPath = mapperRootPath + "requireorder\\infrastructure\\po";
+    protected final static String requireOrderPoPath = mapperRootPath + "..\\po";
 
     /**
-     * require   Po类的全路径名前缀，用于加载类使用
+     *    Po类的全路径名前缀，用于加载类使用
      */
     protected final static String classWholePathPre
-        = "com.huawei.it.cspm.hlrcworkorder.requireorder.infrastructure.po.";
+        = "...po.";
 
     protected static List<String> poClassName = new ArrayList<>(64);
 
@@ -100,24 +99,15 @@ public class RequireOrderHandler extends MapperModel {
     }
 
     static class ActionHandler {
-        /**
-         * 送修需求单修改
-         */
+    
         public static final String OPERATOR_MODIFY = "modify";
 
-        /**
-         * 送修需求单关闭
-         */
+       
         public static final String OPERATOR_CLOSE = "close";
 
-        /**
-         * 送修需求单删除
-         */
+        
         public static final String OPERATOR_DELETE = "delete";
 
-        /**
-         * 送修需求单取消
-         */
         public static final String OPERATOR_CANCEL = "cancel";
 
         static List<String> actionList = new ArrayList<>(6);
