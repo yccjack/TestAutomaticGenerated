@@ -1,4 +1,4 @@
-package com.huawei.it.cspm.auto;
+package ;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,14 +23,12 @@ import org.junit.platform.commons.util.StringUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 
 import com.alibaba.fastjson.JSON;
-import com.huawei.it.cspm.auto.model.Model;
-import com.huawei.it.cspm.hlrcworkorder.requireorder.service.impl.RepairRequireOrderService;
-import com.huawei.it.jalor5.core.util.CollectionUtil;
+import auto.model.Model;
 
 /**
  * 自动生成对应的mock测试基础类
  *
- * @author yWX1117504
+ * @author yccjack
  * @since 2022/1/20
  */
 public abstract class TestClassMockAuto {
