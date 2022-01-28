@@ -63,15 +63,47 @@ public class Model {
      */
     private String paramFilePath;
 
-    public static String createParam(String paramName, String paramTypeName, String methodName) {
-        return predict.predictQuoteParam(paramName,paramTypeName,methodName);
+    public static String createParam(String simpleName, String paramName, String paramTypeName, String methodName) {
+        String result = predict.predictQuoteParam(paramName, paramTypeName, methodName);
+        Model currentMode = currentCreateMode.get();
+        if (currentMode == null) {
+            Model model = new Model();
+            model.setSimpleName(simpleName);
+            model.setParamFilePath("ClassMethodParam");
+            Param param = new Param();
+            param.setParamName(paramName);
+            param.setParamTypeName(paramTypeName);
+            param.setMethodName(methodName);
+            List<Param> params = new ArrayList<>();
+            params.add(param);
+            model.setParamTypeName(params);
+            currentCreateMode.set(model);
+        } else {
+            List<Param> currentCreateModeParam = currentMode.getParamTypeName();
+            Param param = new Param();
+            param.setParamName(paramName);
+            param.setParamTypeName(paramTypeName);
+            param.setMethodName(methodName);
+            currentCreateModeParam.add(param);
+        }
+
+        return result;
     }
 
     public void setParamFilePath(String paramFilePath) {
         this.paramFilePath = paramFilePath + ".xl";
     }
 
-    public final void createMode(String classDatum, String paramData, int index) {
+    /**
+     * 格式：  demo
+     * classDatum  =  WorkOrderSignService.doSignWorkOrder.Array[L,String.ClassMethodParam
+     * paramData  =  SignWorkOrderDto-signWorkOrderDtoList-1,language-2
+     * index = 1
+     *
+     * @param classDatum class的方法信息
+     * @param paramData class方法的参数信息
+     */
+    public final void createMode(String classDatum, String paramData) {
         String[] split = classDatum.split("\\.");
         String className = split[0];
         this.setSimpleName(className);
@@ -81,31 +113,32 @@ public class Model {
         String[] paramSp = split[2].split(",");
         String[] paramDataSp = paramData.split(",");
         Set<String> objects = usedParamMap.computeIfAbsent(simpleName, k -> new HashSet<>());
-
         List<Param> params = new ArrayList<>();
         this.setParamTypeName(params);
         for (int i = 0; i < paramSp.length; i++) {
             Param param = new Param();
             String paramIndex = paramSp[i];
             String[] paramDataArray = paramDataSp[i].split("-");
-            String usedParam = handlerUsedParam(path);
+            String usedParam = getFileContent(rootPath + "\\auto\\exercise\\param\\" + this.getParamFilePath());
             String[] usedArray = usedParam.split(",");
             if (paramIndex.contains("Array")) {
-                String paramName = paramDataArray[1];
-                param.setParamTypeName(paramIndex);
-                param.setInnerParamType(paramDataArray[0]);
-                param.setParamName(paramName);
+                String[] arrayType = paramIndex.split("\\[");
+                String arrayGenericsType = paramDataArray[0];
+                String arrayParamName = paramDataArray[1];
+                param.setParamTypeName(arrayType[1]);
+                param.setGenericsName(arrayGenericsType);
+                param.setParamName(arrayParamName);
                 int usedParamIndex = Integer.parseInt(paramDataArray[2]);
                 param.setIndex(usedParamIndex);
                 String used = usedArray[usedParamIndex - 1];
                 param.setUsedParam(used);
-                objects.add(paramName);
-                List<String> strings = usedParamMapForParamName.computeIfAbsent(paramName, k -> new ArrayList<>());
+                objects.add(arrayParamName);
+                List<String> strings = usedParamMapForParamName.computeIfAbsent(arrayParamName, k -> new ArrayList<>());
                 strings.add(used);
             } else {
                 String paramName = paramDataArray[0];
                 param.setParamTypeName(paramIndex);
-                param.setInnerParamType(null);
+                param.setGenericsName(null);
                 param.setParamName(paramName);
                 int usedParamIndex = Integer.parseInt(paramDataArray[1]);
                 param.setIndex(usedParamIndex);
@@ -130,8 +163,8 @@ public class Model {
 
     }
 
-    private String handlerUsedParam(String path) {
-        File file = new File(rootPath + "\\auto\\exercise\\param\\" + this.getParamFilePath());
+    public static String getFileContent(String path) {
+        File file = new File(path);
         StringBuilder sb = new StringBuilder(1024);
         try (BufferedReader fis = new BufferedReader(new FileReader(file))) {
             String s = fis.readLine();
@@ -152,19 +185,19 @@ public class Model {
     @Data
     public static class Param {
         /**
-         * 参数类型
+         * 参数类型 L->LIST  S->SET  H->HASH  M->MAP
          */
         private String paramTypeName;
+
+        /**
+         * 参数类型
+         */
+        private String genericsName;
 
         /**
          * 方法名
          */
         private String methodName;
-
-        /**
-         * 泛型，只存在于集合类型中
-         */
-        private String innerParamType;
 
         /**
          * 参数名称，此字段为学习字段。
