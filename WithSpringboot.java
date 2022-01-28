@@ -34,6 +34,13 @@ public class WithSpringboot extends TestClassMockAuto {
         for (Field field : fields) {
             boolean matches;
             field.setAccessible(true);
+            Class<?> type = field.getType();
+            if(type.isPrimitive()){
+                continue;
+            }
+            if(usedParamMapForParamName.get(type.getSimpleName())!=null){
+                continue;
+            }
             if (!Modifier.isStatic(field.getModifiers())) {
                 String loweName = "";
                 String fieldName = field.getType().getSimpleName();
@@ -67,14 +74,6 @@ public class WithSpringboot extends TestClassMockAuto {
             .append(line)
             .append("@AutoConfigureMockMvc")
             .append(line);
-    }
-
-    protected void handlerFieldImport(Field[] fields) {
-        for (Field field : fields) {
-            field.setAccessible(true);
-            String fieldName = field.getType().getName();
-            importSb.add("import " + fieldName + ";" + line);
-        }
     }
 
     protected void handlerTestUtilsImport(String fileName) {
