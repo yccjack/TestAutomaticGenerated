@@ -1,0 +1,4 @@
+one:param[T,table,@@
+other:param[T,table,@@
+two:action[C,modify,close,delete,cancel;@@
+other:action[C,modify,close,delete,cancel;@@
