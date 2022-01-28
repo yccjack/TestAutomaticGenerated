@@ -10,7 +10,7 @@ import java.util.Locale;
  */
 public class WithoutSpringboot extends TestClassMockAuto {
 
-    protected void handlerAround(String simpleName,  String lowerFirstName) {
+   protected void handlerAround(String simpleName,  String lowerFirstName) {
         javaFile.append("@Before")
             .append(line)
             .append("public void before() {")
@@ -33,6 +33,13 @@ public class WithoutSpringboot extends TestClassMockAuto {
         for (Field field : fields) {
             boolean matches;
             field.setAccessible(true);
+            Class<?> type = field.getType();
+            if(type.isPrimitive()){
+                continue;
+            }
+            if(usedParamMapForParamName.get(type.getSimpleName())!=null){
+                continue;
+            }
             if (!Modifier.isStatic(field.getModifiers())) {
                 String loweName = "";
                 String fieldName = field.getType().getSimpleName();
@@ -83,6 +90,13 @@ public class WithoutSpringboot extends TestClassMockAuto {
     protected void handlerFieldImport(Field[] fields) {
         for (Field field : fields) {
             field.setAccessible(true);
+            Class<?> type = field.getType();
+            if(type.isPrimitive()){
+                continue;
+            }
+            if(usedParamMapForParamName.get(type.getSimpleName())!=null){
+                continue;
+            }
             String fieldName = field.getType().getName();
             javaFile.append("import ").append(fieldName).append(";").append(line);
         }
