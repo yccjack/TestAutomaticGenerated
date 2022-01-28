@@ -235,7 +235,7 @@ public abstract class TestClassMockAuto {
         fis.write(javaFile.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    /**
+     /**
      * 生成测试类对应目标类的public方法
      *
      * @param clazz 目标类
@@ -296,8 +296,11 @@ public abstract class TestClassMockAuto {
                                         .append(typeSimpleName)
                                         .append(".class);")
                                         .append(line);
+                                    paramList.add(typeSimpleName);
+                                } else {
+                                    paramList.add(null);
                                 }
-                                paramList.add(typeSimpleName);
+
                             }
                             importSb.add("import " + typeName + ";" + line);
 
@@ -327,7 +330,9 @@ public abstract class TestClassMockAuto {
             for (Object o : paramList) {
                 methodBuild.append(o).append(",");
             }
-            methodBuild.deleteCharAt(methodBuild.length() - 1);
+            if(paramList.size()>0){
+                methodBuild.deleteCharAt(methodBuild.length() - 1);
+            }
             methodBuild.append(");").append(line).append("}");
         }
     }
